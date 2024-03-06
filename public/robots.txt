@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://jeongjungsik.vercel.app
+Host: https://.vercel.app
 
 # Sitemaps
-Sitemap: https://jeongjungsik.vercel.app/sitemap.xml
+Sitemap: https://.vercel.app/sitemap.xml
