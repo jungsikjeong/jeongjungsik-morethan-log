@@ -1,9 +1,0 @@
-# *
-User-agent: *
-Allow: /
-
-# Host
-Host: https://jeongjungsik.vercel.app
-
-# Sitemaps
-Sitemap: https://jeongjungsik.vercel.app/sitemap.xml
