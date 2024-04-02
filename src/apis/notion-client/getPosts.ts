@@ -1,6 +1,6 @@
-import { CONFIG } from "site.config"
 import { NotionAPI } from "notion-client"
 import { idToUuid } from "notion-utils"
+import { CONFIG } from "site.config"
 
 import getAllPageIds from "src/libs/utils/notion/getAllPageIds"
 import getPageProperties from "src/libs/utils/notion/getPageProperties"

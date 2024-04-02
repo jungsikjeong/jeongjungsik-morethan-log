@@ -12,9 +12,11 @@ import "prismjs/themes/prism-tomorrow.css"
 
 // used for rendering equations (optional)
 
+import styled from "@emotion/styled"
 import "katex/dist/katex.min.css"
 import { FC } from "react"
-import styled from "@emotion/styled"
+
+import Comments from "src/components/Comments"
 
 const _NotionRenderer = dynamic(
   () => import("react-notion-x").then((m) => m.NotionRenderer),
@@ -22,7 +24,7 @@ const _NotionRenderer = dynamic(
 )
 
 const Code = dynamic(() =>
-  import("react-notion-x/build/third-party/code").then(async (m) =>  m.Code )
+  import("react-notion-x/build/third-party/code").then(async (m) => m.Code)
 )
 
 const Collection = dynamic(() =>
@@ -51,10 +53,11 @@ const mapPageUrl = (id: string) => {
 }
 
 type Props = {
+  pageId: string
   recordMap: ExtendedRecordMap
 }
 
-const NotionRenderer: FC<Props> = ({ recordMap }) => {
+const NotionRenderer: FC<Props> = ({ pageId, recordMap }) => {
   const [scheme] = useScheme()
   return (
     <StyledWrapper>
@@ -70,6 +73,7 @@ const NotionRenderer: FC<Props> = ({ recordMap }) => {
           nextImage: Image,
           nextLink: Link,
         }}
+        pageFooter={<Comments pageId={pageId} recordMap={recordMap} />}
         mapPageUrl={mapPageUrl}
       />
     </StyledWrapper>

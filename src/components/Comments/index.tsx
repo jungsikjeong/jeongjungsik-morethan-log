@@ -1,16 +1,16 @@
 import * as React from "react"
-import { useState } from "react"
 
 import axios from "axios"
 import cs from "classnames"
 import { formatDistance } from "date-fns"
 import ko from "date-fns/locale/ko"
 import { useFormik } from "formik"
-import useSWR from "swr"
 
 import styled from "@emotion/styled"
+import { useMutation, useQuery } from "@tanstack/react-query"
 import { ExtendedRecordMap } from "notion-types"
 import useScheme from "src/hooks/useScheme"
+import { queryClient } from "src/libs/react-query"
 
 const Container = styled.div<{ scheme: string }>`
   margin-top: 3rem;
@@ -244,36 +244,77 @@ const Container = styled.div<{ scheme: string }>`
 `
 
 interface CommentsProps {
-  pageId: string
+  pageId: string | undefined
   recordMap: ExtendedRecordMap
 }
 
 const Comments = ({ pageId, recordMap }: CommentsProps) => {
-  const [loading, setLoading] = useState(false)
-  const { data, mutate } = useSWR(`/api/comments/${pageId}`)
   const [scheme] = useScheme()
+
+  // useQuery 훅을 사용하여 데이터 가져오기
+  const { data, isLoading, isError } = useQuery(["comments", pageId], () =>
+    axios.get(`/api/comments/${pageId}`).then((res) => res.data)
+  )
+
+  console.log(data)
+
+  const mutation = useMutation({
+    mutationFn: ({ content }: { content: string }) =>
+      axios.post(`/api/comments/${pageId}`, { content }),
+    onSuccess: () => {
+      formik.resetForm()
+      queryClient.invalidateQueries({ queryKey: ["comments", pageId] })
+    },
+  })
+
+  // useMutation 훅을 사용하여 데이터 수정
+  const addCommentMutation = useMutation(
+    (values) => axios.post(`/api/comments/${pageId}`, values),
+    {
+      onSuccess: () => {
+        formik.resetForm()
+      },
+    }
+  )
 
   const formik = useFormik({
     initialValues: {
       content: "",
     },
-    onSubmit: async (values: any) => {
+    onSubmit: async (values) => {
       if (values.content.trim()) {
-        setLoading(true)
-
-        try {
-          await axios.post(`/api/comments/${pageId}`, {
-            content: values.content.trim(),
-          })
-
-          formik.resetForm()
-          await mutate()
-        } finally {
-          setLoading(false)
-        }
+        const content = values.content.trim()
+        mutation.mutate({ content })
+        // await addCommentMutation.mutateAsync({
+        //   content: values.content.trim(),
+        // });
       }
     },
   })
+
+  // const { data, mutate } = useSWR(`/api/comments/${pageId}`)
+  // console.log(data)
+  // const formik = useFormik({
+  //   initialValues: {
+  //     content: "",
+  //   },
+  //   onSubmit: async (values: any) => {
+  //     if (values.content.trim()) {
+  //       setLoading(true)
+
+  //       try {
+  //         await axios.post(`/api/comments/${pageId}`, {
+  //           content: values.content.trim(),
+  //         })
+
+  //         formik.resetForm()
+  //         await mutate()
+  //       } finally {
+  //         setLoading(false)
+  //       }
+  //     }
+  //   },
+  // })
 
   const comments = (data?.results || []).map((item: any) => {
     const user = recordMap.notion_user[item.created_by.id]?.value || {
@@ -298,7 +339,7 @@ const Comments = ({ pageId, recordMap }: CommentsProps) => {
       <h2 className="notion-h notion-h1">댓글</h2>
 
       <form
-        className={cs("item", loading && "loading")}
+        className={cs("item", isLoading && "loading")}
         onSubmit={formik.handleSubmit}
       >
         <img className="profileImage guest" src="/comment.png" alt="guest" />

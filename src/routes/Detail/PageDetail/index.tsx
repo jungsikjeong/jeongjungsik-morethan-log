@@ -1,7 +1,7 @@
-import React from "react"
 import styled from "@emotion/styled"
-import NotionRenderer from "../components/NotionRenderer"
+import React from "react"
 import usePostQuery from "src/hooks/usePostQuery"
+import NotionRenderer from "../components/NotionRenderer"
 type Props = {}
 
 const PageDetail: React.FC<Props> = () => {
@@ -10,7 +10,7 @@ const PageDetail: React.FC<Props> = () => {
   if (!data) return null
   return (
     <StyledWrapper>
-      <NotionRenderer recordMap={data.recordMap} />
+      <NotionRenderer pageId={data.id} recordMap={data.recordMap} />
     </StyledWrapper>
   )
 }
