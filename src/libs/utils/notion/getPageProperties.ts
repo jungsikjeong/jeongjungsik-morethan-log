@@ -1,6 +1,6 @@
-import { getTextContent, getDateValue } from "notion-utils"
 import { NotionAPI } from "notion-client"
 import { BlockMap, CollectionPropertySchemaMap } from "notion-types"
+import { getDateValue, getTextContent } from "notion-utils"
 import { customMapImageUrl } from "./customMapImageUrl"
 
 async function getPageProperties(
@@ -12,6 +12,7 @@ async function getPageProperties(
   const rawProperties = Object.entries(block?.[id]?.value?.properties || [])
   const excludeProperties = ["date", "select", "multi_select", "person", "file"]
   const properties: any = {}
+
   for (let i = 0; i < rawProperties.length; i++) {
     const [key, val]: any = rawProperties[i]
     properties.id = id
@@ -71,6 +72,7 @@ async function getPageProperties(
               users.push(user)
             }
           }
+
           properties[schema[key].name] = users
           break
         }

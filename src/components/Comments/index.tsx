@@ -17,7 +17,22 @@ const Container = styled.div<{ scheme: string }>`
   width: 100%;
 
   @media (min-width: 1400px) {
-    /* width: calc(100% - 300px - 5rem); */
+    width: calc(100% - 300px - 5rem);
+    width: 100%;
+  }
+  .title {
+    margin-bottom: 2rem;
+    text-align: center;
+    &::after {
+      content: "";
+      display: block;
+      height: 2px;
+      width: 4rem;
+      background-color: ${({ theme }) =>
+        theme.scheme === "light" ? "#2f3437" : "#fff"};
+      margin-top: 0.5rem;
+      border-radius: 5px;
+    }
   }
 
   .item {
@@ -67,6 +82,10 @@ const Container = styled.div<{ scheme: string }>`
       }
     }
 
+    .guest {
+      filter: ${({ scheme }) => (scheme === "light" ? "invert(0.6)" : "")};
+    }
+
     .profileImage {
       width: 40px;
       height: 40px;
@@ -77,7 +96,6 @@ const Container = styled.div<{ scheme: string }>`
       position: relative;
       z-index: 1;
       transition: 250ms filter;
-      filter: ${({ scheme }) => (scheme === "light" ? "invert(0.6)" : "")};
     }
 
     .right {
@@ -186,6 +204,7 @@ const Container = styled.div<{ scheme: string }>`
       textarea,
       button {
         opacity: 0.5;
+        cursor: not-allowed;
       }
     }
 
@@ -209,14 +228,12 @@ const Container = styled.div<{ scheme: string }>`
         outline: none;
         resize: none;
 
-        /* color: ${({ theme }) => theme.colors.gray12}; */
         transition: 250ms opacity;
       }
 
       button {
         position: relative;
         z-index: 2;
-        cursor: pointer;
         outline: none;
         border: none;
         border-radius: 50%;
@@ -244,19 +261,24 @@ const Container = styled.div<{ scheme: string }>`
 `
 
 interface CommentsProps {
+  author:
+    | { id: string; name: string; profile_photo?: string | undefined }[]
+    | undefined
   pageId: string | undefined
   recordMap: ExtendedRecordMap
 }
 
-const Comments = ({ pageId, recordMap }: CommentsProps) => {
+const Comments = ({ author, pageId, recordMap }: CommentsProps) => {
   const [scheme] = useScheme()
 
   // useQuery 훅을 사용하여 데이터 가져오기
-  const { data, isLoading, isError } = useQuery(["comments", pageId], () =>
-    axios.get(`/api/comments/${pageId}`).then((res) => res.data)
+  const { data, isLoading, isError } = useQuery(
+    ["comments", pageId],
+    () => axios.get(`/api/comments/${pageId}`).then((res) => res.data),
+    {
+      refetchOnWindowFocus: false,
+    }
   )
-
-  console.log(data)
 
   const mutation = useMutation({
     mutationFn: ({ content }: { content: string }) =>
@@ -267,7 +289,6 @@ const Comments = ({ pageId, recordMap }: CommentsProps) => {
     },
   })
 
-  // useMutation 훅을 사용하여 데이터 수정
   const addCommentMutation = useMutation(
     (values) => axios.post(`/api/comments/${pageId}`, values),
     {
@@ -285,43 +306,19 @@ const Comments = ({ pageId, recordMap }: CommentsProps) => {
       if (values.content.trim()) {
         const content = values.content.trim()
         mutation.mutate({ content })
-        // await addCommentMutation.mutateAsync({
-        //   content: values.content.trim(),
-        // });
       }
     },
   })
 
-  // const { data, mutate } = useSWR(`/api/comments/${pageId}`)
-  // console.log(data)
-  // const formik = useFormik({
-  //   initialValues: {
-  //     content: "",
-  //   },
-  //   onSubmit: async (values: any) => {
-  //     if (values.content.trim()) {
-  //       setLoading(true)
-
-  //       try {
-  //         await axios.post(`/api/comments/${pageId}`, {
-  //           content: values.content.trim(),
-  //         })
-
-  //         formik.resetForm()
-  //         await mutate()
-  //       } finally {
-  //         setLoading(false)
-  //       }
-  //     }
-  //   },
-  // })
-
   const comments = (data?.results || []).map((item: any) => {
-    const user = recordMap.notion_user[item.created_by.id]?.value || {
-      id: "guest",
-      name: "익명",
-      profile_photo: "/comment.png",
-    }
+    const user =
+      author && author[0]?.id === item.created_by.id
+        ? author[0]
+        : {
+            id: "guest",
+            name: "익명",
+            profile_photo: "/comment.png",
+          }
 
     return {
       id: item.id,
@@ -336,7 +333,7 @@ const Comments = ({ pageId, recordMap }: CommentsProps) => {
 
   return (
     <Container className="notion-comments" scheme={scheme}>
-      <h2 className="notion-h notion-h1">댓글</h2>
+      <h2 className="notion-h notion-h1 title">댓글</h2>
 
       <form
         className={cs("item", isLoading && "loading")}

@@ -15,7 +15,6 @@ const responseJSON = (res: NextApiResponse, status: number, json: any) => {
 // eslint-disable-next-line import/no-anonymous-default-export
 export default async (req: NextApiRequest, res: NextApiResponse) => {
   const { id, cursor } = req.query
-
   if (req.method === "POST") {
     if (!req.body.content) {
       return responseJSON(res, 400, { message: "content is required" })

@@ -53,7 +53,6 @@ export const getStaticProps: GetStaticProps = async (context) => {
 
 const DetailPage: NextPageWithLayout = () => {
   const post = usePostQuery()
-
   if (!post) return <CustomError />
 
   const image =

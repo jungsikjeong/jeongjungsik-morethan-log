@@ -1,6 +1,7 @@
 import styled from "@emotion/styled"
 import React from "react"
 import Category from "src/components/Category"
+import Comments from "src/components/Comments"
 import usePostQuery from "src/hooks/usePostQuery"
 import NotionRenderer from "../components/NotionRenderer"
 import CommentBox from "./CommentBox"
@@ -33,6 +34,11 @@ const PostDetail: React.FC<Props> = () => {
         {data.type[0] === "Post" && (
           <>
             <Footer />
+            <Comments
+              pageId={data.id}
+              recordMap={data.recordMap}
+              author={data?.author}
+            />
             {/* <Comments pageId={data.id} recordMap={data.recordMap} /> */}
             <CommentBox data={data} />
           </>

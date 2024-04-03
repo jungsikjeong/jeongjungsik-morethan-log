@@ -16,8 +16,6 @@ import styled from "@emotion/styled"
 import "katex/dist/katex.min.css"
 import { FC } from "react"
 
-import Comments from "src/components/Comments"
-
 const _NotionRenderer = dynamic(
   () => import("react-notion-x").then((m) => m.NotionRenderer),
   { ssr: false }
@@ -73,7 +71,9 @@ const NotionRenderer: FC<Props> = ({ pageId, recordMap }) => {
           nextImage: Image,
           nextLink: Link,
         }}
-        pageFooter={<Comments pageId={pageId} recordMap={recordMap} />}
+        // pageFooter={
+        //   <Comments pageId={pageId} recordMap={recordMap} author={author} />
+        // }
         mapPageUrl={mapPageUrl}
       />
     </StyledWrapper>
