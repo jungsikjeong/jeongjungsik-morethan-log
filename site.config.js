@@ -4,7 +4,7 @@ const CONFIG = {
     name: "정중식",
     image: "/me.png", // If you want to create your own notion avatar, check out https://notion-avatar.vercel.app
     role: "frontend developer",
-    bio: "기록을 남기고 있습니다 ಠ‸ಠ",
+    bio: "공부 기록과 프로젝트 공유를 써내려갑니다.",
     email: "wndtlr1024@gmail.com",
     linkedin: "",
     github: "jungsikjeong",
@@ -19,7 +19,7 @@ const CONFIG = {
   // blog setting (required)
   blog: {
     title: "코드 밥상, 정중식사",
-    description: "welcome to 코드 밥상, 정중식사!",
+    description: "한상 차려놨습니다..",
   },
 
   // CONFIG configration (required)
